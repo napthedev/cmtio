@@ -2,15 +2,9 @@ import FacebookProvider from "next-auth/providers/facebook";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import NextAuth from "next-auth";
-import fauna from "faunadb";
-import { idFromRef } from "../../../utils/fauna";
-
-const q = fauna.query;
-
-const client = new fauna.Client({
-  secret: process.env.FAUNADB_SECRET_KEY as string,
-  domain: "db.fauna.com",
-});
+import { client } from "@/shared/client";
+import { createOrUpdateUser } from "@/services/users";
+import { idFromRef } from "@/utils/fauna";
 
 export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -38,23 +32,7 @@ export default NextAuth({
     },
     signIn: async ({ user }) => {
       const result = (await client.query(
-        q.Let(
-          {
-            match: q.Match(q.Index("user_from_email"), user.email as string),
-            data: {
-              data: {
-                username: user.name,
-                email: user.email,
-                photo_url: user.picture,
-              },
-            },
-          },
-          q.If(
-            q.Exists(q.Var("match")),
-            q.Update(q.Select("ref", q.Get(q.Var("match"))), q.Var("data")),
-            q.Create(q.Collection("users"), q.Var("data"))
-          )
-        )
+        createOrUpdateUser(user as any)
       )) as any;
       user.id = idFromRef(result.ref);
 

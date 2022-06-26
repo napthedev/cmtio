@@ -2,7 +2,7 @@ Map(
   Paginate(
     Match(
       Index("comments_by_app_and_slug"),
-      Ref(Collection("apps"), "335355815353385556"),
+      Ref(Collection("sites"), "335355815353385556"),
       "/"
     )
   ),
