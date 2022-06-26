@@ -10,7 +10,7 @@ export interface SitesListResponse {
     ref: Ref;
     ts: number;
     data: {
-      title: string;
+      name: string;
       allowed_origins: string[];
     };
   }[];

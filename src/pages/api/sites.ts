@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { createSite, getSitesByUserId } from "@/services/sites";
 
 import { UserSession } from "@/shared/types";
 import { client } from "@/shared/client";
 import { getSession } from "next-auth/react";
-import { getSitesByUserId } from "@/services/sites";
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,7 +16,19 @@ export default async function handler(
 
   const id = session.user.id;
 
-  const sites = await client.query(getSitesByUserId(id));
+  if (req.method === "GET") {
+    const sites = await client.query(getSitesByUserId(id));
 
-  res.status(200).json(sites);
+    res.status(200).json(sites);
+  } else {
+    if (!req.body?.name || !req.body?.allowed_origins)
+      return res.status(403).json({ message: "Invalid request" });
+
+    const created = await client.query(
+      createSite(id, req.body.name, req.body.allowed_origins)
+    );
+
+    if (created) res.send(created);
+    else res.status(500).send("Internal server error");
+  }
 }
