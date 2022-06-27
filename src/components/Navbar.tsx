@@ -32,21 +32,21 @@ const Navbar: FC = () => {
               />
             </button>
             <div
-              className={`absolute top-full right-0 py-2 flex flex-col items-stretch [&>*]:whitespace-nowrap bg-dark-100 rounded-md transition-all ${
+              className={`absolute top-full right-0 py-2 flex flex-col items-stretch [&>*]:whitespace-nowrap bg-light-100 dark:bg-dark-100 rounded-md transition-all ${
                 isDropdownOpened ? "opacity-100 visible" : "opacity-0 invisible"
               }`}
             >
               <Link href="/profile">
-                <a className="flex items-center gap-2 px-3 py-2 bg-dark-100 hover:brightness-125 transition">
-                  <FaUser className="fill-white w-6 h-5" />
+                <a className="flex items-center gap-2 px-3 py-2 bg-light-100 dark:bg-dark-100 hover:brightness-125 transition">
+                  <FaUser className="fill-black dark:fill-white w-6 h-5" />
                   <span>Profile</span>
                 </a>
               </Link>
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-2 px-3 py-2 bg-dark-100 hover:brightness-125 transition"
+                className="flex items-center gap-2 px-3 py-2 bg-light-100 dark:bg-dark-100 hover:brightness-125 transition"
               >
-                <IoLogOutOutline className="fill-white w-6 h-6" />
+                <IoLogOutOutline className="fill-black dark:fill-white w-6 h-6" />
                 <span>Sign out</span>
               </button>
             </div>

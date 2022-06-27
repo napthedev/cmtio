@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 body {
-  @apply bg-dark text-gray-100;
+  @apply bg-white dark:bg-dark text-stone-800 dark:text-gray-100;
 }
 
 .create-site-form input {
-  @apply bg-dark py-2 px-3 rounded border-2 border-gray-500 focus:border-primary transition outline-none w-full;
+  @apply bg-white dark:bg-dark py-2 px-3 rounded border-2 border-gray-300 dark:border-gray-500 focus:border-primary transition outline-none w-full;
 }

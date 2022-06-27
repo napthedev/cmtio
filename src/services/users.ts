@@ -4,7 +4,7 @@ const q = fauna.query;
 export const createOrUpdateUser = (user: {
   name: string;
   email: string;
-  picture: string;
+  image: string;
 }) =>
   q.Let(
     {
@@ -13,7 +13,7 @@ export const createOrUpdateUser = (user: {
         data: {
           username: user.name,
           email: user.email,
-          photo_url: user.picture,
+          photo_url: user.image,
         },
       },
     },

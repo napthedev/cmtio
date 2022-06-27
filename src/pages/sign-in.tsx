@@ -66,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (session?.user)
     return {
       redirect: {
-        destination: `/`,
+        destination: "/",
         permanent: false,
       },
       props: {},

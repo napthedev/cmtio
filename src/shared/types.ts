@@ -20,3 +20,35 @@ interface Ref {
     id: string;
   };
 }
+
+export interface Comment1Response {
+  count: number;
+  comments: CommentsResponse;
+}
+
+export interface CommentsResponse {
+  data: CommentType[];
+}
+
+export interface CommentType {
+  reply_count: number;
+  data: {
+    text: string;
+    slug: string;
+  };
+  ts: number;
+  ref: Ref;
+  user: User;
+}
+
+interface User {
+  "@ref": {
+    id: string;
+  };
+  ts: number;
+  data: {
+    username: string;
+    email: string;
+    photo_url: string;
+  };
+}

@@ -135,7 +135,7 @@ const Create: NextPage = () => {
               <div className="flex justify-end mt-6">
                 <button
                   type="submit"
-                  className="bg-dark-200 hover:bg-dark-300 transition px-3 py-2 rounded-md w-24 flex justify-center items-center"
+                  className="bg-light-200 dark:bg-dark-200 hover:bg-light-200 dark:hover:bg-dark-300 transition px-3 py-2 rounded-md w-24 flex justify-center items-center"
                 >
                   {isLoading ? (
                     <div className="w-6 h-6 border-[3px] border-[#ffffff59] border-t-white animate-spin rounded-full"></div>
@@ -166,7 +166,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!session?.user)
     return {
       redirect: {
-        destination: `/sign-in`,
+        destination: "/sign-in",
         permanent: false,
       },
       props: {},

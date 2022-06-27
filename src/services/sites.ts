@@ -35,3 +35,6 @@ export const createSite = (
       q.Create(q.Collection("sites"), q.Var("data"))
     )
   );
+
+export const getSiteById = (siteId: string) =>
+  q.Get(q.Ref(q.Collection("sites"), siteId));

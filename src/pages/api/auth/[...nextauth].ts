@@ -31,9 +31,10 @@ export default NextAuth({
       return { ...session, user: { ...session.user, id: token.sub } };
     },
     signIn: async ({ user }) => {
-      const result = (await client.query(
-        createOrUpdateUser(user as any)
-      )) as any;
+      console.log(user);
+      const result = JSON.parse(
+        JSON.stringify(await client.query(createOrUpdateUser(user as any)))
+      );
       user.id = idFromRef(result.ref);
 
       return true;
