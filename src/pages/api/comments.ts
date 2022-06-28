@@ -22,7 +22,8 @@ export default async function handler(
           getComment1(
             req.query.siteId as string,
             req.query.slug as string,
-            Number(req.query.limit)
+            Number(req.query.limit),
+            Boolean(Number(req.query.oldest))
           )
         ),
         client.query(

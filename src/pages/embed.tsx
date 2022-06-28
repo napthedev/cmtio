@@ -6,15 +6,11 @@ import { getSession } from "next-auth/react";
 import { getSiteById } from "@/services/sites";
 
 interface EmbedProps {
-  siteId: string;
-  slug: string;
   isOriginNotAllowed: boolean;
   isInvalidRequest: boolean;
 }
 
 const Embed: FC<EmbedProps> = ({
-  siteId,
-  slug,
   isOriginNotAllowed = false,
   isInvalidRequest = false,
 }) => {
@@ -24,7 +20,7 @@ const Embed: FC<EmbedProps> = ({
   if (isInvalidRequest)
     return <div className="my-6 text-center">Missing request params</div>;
 
-  return <Comments siteId={siteId} slug={slug} />;
+  return <Comments />;
 };
 
 export default Embed;
@@ -63,8 +59,6 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   return {
     props: {
-      siteId,
-      slug,
       session,
       site,
     },

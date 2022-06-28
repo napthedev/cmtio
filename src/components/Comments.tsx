@@ -13,16 +13,16 @@ import { idFromRef } from "@/utils/fauna";
 import { imageProxy } from "@/utils";
 import { useFetch } from "@/hooks/useFetch";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
-interface CommentsProps {
-  siteId: string;
-  slug: string;
-}
+const Comments: FC = () => {
+  const router = useRouter();
+  const { siteId, slug } = router.query as { siteId: string; slug: string };
 
-const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
   const [limit, setLimit] = useState(5);
 
   const [inputValue, setInputValue] = useState("");
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   const [loadedReplies, setLoadedReplies] = useState<{
     [key: string]: CommentsResponse;
@@ -31,13 +31,15 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
 
   const [isLoadingNewComments, setIsLoadingNewComments] = useState(false);
 
+  const [isSortedByOldest, setIsSortedByOldest] = useState(false);
+
   const { data: userData, status } = useSession();
   const user = userData as UserSession;
 
   const { data, error, mutate } = useFetch(
     `/api/comments?depth=1&siteId=${siteId}&slug=${encodeURIComponent(
       slug
-    )}&limit=${limit}`,
+    )}&limit=${limit}&oldest=${Number(isSortedByOldest)}`,
     (url) => fetcher<Comment1Response>(url)
   );
 
@@ -45,10 +47,11 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
     setIsLoadingNewComments(false);
   }, [data?.comments.data.length]);
 
-  const handleGetReply = (parentId: string, depth: number) => {
+  // Get replies (depth=2)
+  const handleGetReply = async (parentId: string, depth: number) => {
     setIsReplyLoading([...new Set([...isReplyLoading, parentId])]);
 
-    fetch(`/api/comments?depth=${depth}&parentId=${parentId}`)
+    await fetch(`/api/comments?depth=${depth}&parentId=${parentId}`)
       .then((res) => res.json())
       .then((data) => {
         setLoadedReplies((prev) => {
@@ -66,9 +69,11 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
 
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || status !== "authenticated") return;
+    if (!inputValue.trim() || status !== "authenticated" || isSubmitLoading)
+      return;
 
     setInputValue("");
+    setIsSubmitLoading(true);
 
     fetch(`/api/write-comment`, {
       method: "POST",
@@ -79,9 +84,13 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
         depth: 1,
         siteId,
         slug,
-        text: inputValue.trim(),
+        text: inputValue.trim().slice(0, 5000),
       }),
-    }).finally(() => mutate());
+    }).finally(() => {
+      mutate().finally(() => {
+        setIsSubmitLoading(false);
+      });
+    });
   };
 
   if (error)
@@ -96,8 +105,26 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
           {data.count} comment{data.count > 1 ? "s" : ""}
         </p>
         <div className="flex items-center">
-          <button className="bg-dark-100 py-1 px-2 rounded-l">Newest</button>
-          <button className="bg-dark-200 py-1 px-2 rounded-r">Oldest</button>
+          <button
+            onClick={() => setIsSortedByOldest(false)}
+            className={`py-1 px-2 rounded-l ${
+              !isSortedByOldest
+                ? "bg-light-200 dark:bg-dark-100 border border-stone-300 dark:border-stone-700"
+                : "bg-light-100 dark:bg-dark-200"
+            }`}
+          >
+            Newest
+          </button>
+          <button
+            onClick={() => setIsSortedByOldest(true)}
+            className={`py-1 px-2 rounded-r ${
+              isSortedByOldest
+                ? "bg-light-200 dark:bg-dark-100 border border-stone-300 dark:border-stone-700"
+                : "bg-light-100 dark:bg-dark-200"
+            }`}
+          >
+            Oldest
+          </button>
         </div>
       </div>
       <div className="flex gap-2 items-center">
@@ -113,6 +140,7 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
           />
         </div>
         <form
+          autoComplete="off"
           onSubmit={handleFormSubmit}
           onClick={() => {
             if (status !== "authenticated") {
@@ -124,7 +152,7 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
           }`}
         >
           <input
-            className={`w-full h-9 outline-none bg-light-100 dark:bg-dark-100 rounded-full px-3 ${
+            className={`w-full h-9 outline-none bg-light-100 dark:bg-dark-100 rounded-full pl-3 pr-10 ${
               status !== "authenticated" ? "cursor-pointer" : ""
             }`}
             type="text"
@@ -137,17 +165,23 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2">
-            {status === "authenticated" ? (
-              <IoMdSend
-                className={`h-6 w-6 transition ${
-                  inputValue ? "fill-primary" : "fill-gray-400"
-                }`}
-              />
-            ) : (
-              <BiLogIn className="h-6 w-6 fill-primary" />
-            )}
-          </button>
+          {isSubmitLoading ? (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <div className="w-5 h-5 rounded-full border-2 border-t-transparent border-gray-400 animate-spin"></div>
+            </div>
+          ) : (
+            <button className="absolute right-2 top-1/2 -translate-y-1/2">
+              {status === "authenticated" ? (
+                <IoMdSend
+                  className={`h-6 w-6 transition ${
+                    inputValue.trim() ? "fill-primary" : "fill-gray-400"
+                  }`}
+                />
+              ) : (
+                <BiLogIn className="h-6 w-6 fill-primary" />
+              )}
+            </button>
+          )}
         </form>
       </div>
 
@@ -158,19 +192,24 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
           handleGetReply={handleGetReply}
           loadedReplies={loadedReplies}
           isReplyLoading={isReplyLoading}
+          setLoadedReplies={setLoadedReplies}
+          depth={1}
         />
       ))}
+
       {(isLoadingNewComments || limit <= data.comments.data.length) && (
         <div className="mt-2">
           {isLoadingNewComments ? (
-            <span className="text-zinc-400">View more comments...</span>
+            <span className="text-zinc-500 dark:text-zinc-400">
+              View more comments...
+            </span>
           ) : (
             <button
               onClick={() => {
                 setIsLoadingNewComments(true);
                 setLimit(limit + 5);
               }}
-              className="text-zinc-400 hover:underline"
+              className="text-zinc-500 dark:text-zinc-400 hover:underline"
             >
               View more comments
             </button>

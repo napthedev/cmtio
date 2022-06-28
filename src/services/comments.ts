@@ -2,10 +2,15 @@ import fauna from "faunadb";
 
 const q = fauna.query;
 
-export const getComment1 = (siteId: string, slug: string, limit: number) =>
+export const getComment1 = (
+  siteId: string,
+  slug: string,
+  limit: number,
+  isSortedByOldest: boolean
+) =>
   q.Map(
     q.Paginate(
-      q.Reverse(
+      (!isSortedByOldest ? q.Reverse : (x: any) => x)(
         q.Match(
           q.Index("comment1_by_site_and_slug"),
           q.Ref(q.Collection("sites"), siteId),
@@ -106,7 +111,7 @@ export const getComment3 = (parentId: string) =>
     )
   );
 
-export const writeComment1 = (
+export const writeComment = (
   userId: string,
   siteId: string,
   slug: string,
@@ -118,5 +123,23 @@ export const writeComment1 = (
       user: q.Ref(q.Collection("users"), userId),
       site: q.Ref(q.Collection("sites"), siteId),
       slug,
+    },
+  });
+
+export const writeReply = (
+  userId: string,
+  siteId: string,
+  slug: string,
+  text: string,
+  parentId: string,
+  depth: number
+) =>
+  q.Create(q.Collection(`comment${depth}`), {
+    data: {
+      text,
+      user: q.Ref(q.Collection("users"), userId),
+      site: q.Ref(q.Collection("sites"), siteId),
+      slug,
+      parent: q.Ref(q.Collection(`comment${depth - 1}`), parentId),
     },
   });
