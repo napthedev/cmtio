@@ -1,5 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { countComments, getComment1, getComment2 } from "@/services/comments";
+import {
+  countComments,
+  getComment1,
+  getComment2,
+  getComment3,
+} from "@/services/comments";
 
 import { client } from "@/shared/client";
 
@@ -30,6 +35,18 @@ export default async function handler(
 
       const comments = await client.query(
         getComment2(req.query.parentId as string)
+      );
+
+      res.json(comments);
+
+      break;
+    }
+
+    case "3": {
+      if (!req.query.parentId) return res.status(400).send("Invalid request");
+
+      const comments = await client.query(
+        getComment3(req.query.parentId as string)
       );
 
       res.json(comments);

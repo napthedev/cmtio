@@ -61,7 +61,7 @@ const Comment: FC<CommentProps> = ({
               <Comment
                 key={idFromRef(reply.ref)}
                 comment={reply}
-                handleGetReply={handleGetReply}
+                handleGetReply={() => handleGetReply(idFromRef(reply.ref), 3)}
                 loadedReplies={loadedReplies}
                 isReplyLoading={isReplyLoading}
               />
