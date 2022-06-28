@@ -2,17 +2,20 @@ import fauna from "faunadb";
 
 const q = fauna.query;
 
-export const getComment1 = (siteId: string, slug: string) =>
+export const getComment1 = (siteId: string, slug: string, limit: number) =>
   q.Map(
     q.Paginate(
-      q.Match(
-        q.Index("comment1_by_site_and_slug"),
-        q.Ref(q.Collection("sites"), siteId),
-        slug
-      )
+      q.Reverse(
+        q.Match(
+          q.Index("comment1_by_site_and_slug"),
+          q.Ref(q.Collection("sites"), siteId),
+          slug
+        )
+      ),
+      { size: limit }
     ),
     q.Lambda(
-      "comment1",
+      ["ts", "comment1"],
       q.Let(
         {
           data: q.Get(q.Var("comment1")),
@@ -102,3 +105,18 @@ export const getComment3 = (parentId: string) =>
       )
     )
   );
+
+export const writeComment1 = (
+  userId: string,
+  siteId: string,
+  slug: string,
+  text: string
+) =>
+  q.Create(q.Collection("comment1"), {
+    data: {
+      text,
+      user: q.Ref(q.Collection("users"), userId),
+      site: q.Ref(q.Collection("sites"), siteId),
+      slug,
+    },
+  });

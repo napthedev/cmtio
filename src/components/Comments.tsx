@@ -3,7 +3,7 @@ import {
   CommentsResponse,
   UserSession,
 } from "@/shared/types";
-import { FC, useState } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 
 import { BiLogIn } from "react-icons/bi";
 import Comment from "./Comment";
@@ -11,7 +11,7 @@ import { IoMdSend } from "react-icons/io";
 import { fetcher } from "@/utils/fetch";
 import { idFromRef } from "@/utils/fauna";
 import { imageProxy } from "@/utils";
-import useSWR from "swr";
+import { useFetch } from "@/hooks/useFetch";
 import { useSession } from "next-auth/react";
 
 interface CommentsProps {
@@ -20,6 +20,8 @@ interface CommentsProps {
 }
 
 const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
+  const [limit, setLimit] = useState(5);
+
   const [inputValue, setInputValue] = useState("");
 
   const [loadedReplies, setLoadedReplies] = useState<{
@@ -27,13 +29,21 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
   }>({});
   const [isReplyLoading, setIsReplyLoading] = useState<string[]>([]);
 
+  const [isLoadingNewComments, setIsLoadingNewComments] = useState(false);
+
   const { data: userData, status } = useSession();
   const user = userData as UserSession;
 
-  const { data, error } = useSWR(
-    `/api/comments?depth=1&siteId=${siteId}&slug=${encodeURIComponent(slug)}`,
+  const { data, error, mutate } = useFetch(
+    `/api/comments?depth=1&siteId=${siteId}&slug=${encodeURIComponent(
+      slug
+    )}&limit=${limit}`,
     (url) => fetcher<Comment1Response>(url)
   );
+
+  useEffect(() => {
+    setIsLoadingNewComments(false);
+  }, [data?.comments.data.length]);
 
   const handleGetReply = (parentId: string, depth: number) => {
     setIsReplyLoading([...new Set([...isReplyLoading, parentId])]);
@@ -54,8 +64,28 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
       );
   };
 
+  const handleFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || status !== "authenticated") return;
+
+    setInputValue("");
+
+    fetch(`/api/write-comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        depth: 1,
+        siteId,
+        slug,
+        text: inputValue.trim(),
+      }),
+    }).finally(() => mutate());
+  };
+
   if (error)
-    return <div className="my-6 text-center">Fail to load comments</div>;
+    return <div className="my-6 text-center">Failed to load comments</div>;
 
   if (!data) return <div className="my-6 text-center">Loading comments...</div>;
 
@@ -82,7 +112,8 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
             alt=""
           />
         </div>
-        <div
+        <form
+          onSubmit={handleFormSubmit}
           onClick={() => {
             if (status !== "authenticated") {
               console.log("Open popup");
@@ -117,7 +148,7 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
               <BiLogIn className="h-6 w-6 fill-primary" />
             )}
           </button>
-        </div>
+        </form>
       </div>
 
       {data.comments.data.map((comment1) => (
@@ -129,6 +160,23 @@ const Comments: FC<CommentsProps> = ({ siteId, slug }) => {
           isReplyLoading={isReplyLoading}
         />
       ))}
+      {(isLoadingNewComments || limit <= data.comments.data.length) && (
+        <div className="mt-2">
+          {isLoadingNewComments ? (
+            <span className="text-zinc-400">View more comments...</span>
+          ) : (
+            <button
+              onClick={() => {
+                setIsLoadingNewComments(true);
+                setLimit(limit + 5);
+              }}
+              className="text-zinc-400 hover:underline"
+            >
+              View more comments
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

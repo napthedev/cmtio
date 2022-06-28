@@ -7,10 +7,10 @@ import dayjs from "dayjs";
 import { fetcher } from "@/utils/fetch";
 import { getSession } from "next-auth/react";
 import { idFromRef } from "@/utils/fauna";
-import useSWR from "swr";
+import { useFetch } from "@/hooks/useFetch";
 
 const Home: NextPage = () => {
-  const { data, error } = useSWR(`/api/sites`, (url) =>
+  const { data, error } = useFetch(`/api/sites`, (url) =>
     fetcher<SitesListResponse>(url)
   );
 

@@ -14,12 +14,16 @@ export default async function handler(
 ) {
   switch (req.query.depth) {
     case "1": {
-      if (!req.query.siteId || !req.query.slug)
+      if (!req.query.siteId || !req.query.slug || !req.query.limit)
         return res.status(400).send("Invalid request");
 
       const [comments, count] = await Promise.all([
         client.query(
-          getComment1(req.query.siteId as string, req.query.slug as string)
+          getComment1(
+            req.query.siteId as string,
+            req.query.slug as string,
+            Number(req.query.limit)
+          )
         ),
         client.query(
           countComments(req.query.siteId as string, req.query.slug as string)
