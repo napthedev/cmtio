@@ -10,14 +10,16 @@ import Comment from "./Comment";
 import { IoMdSend } from "react-icons/io";
 import { fetcher } from "@/utils/fetch";
 import { idFromRef } from "@/utils/fauna";
-import { imageProxy } from "@/utils";
+import { imageProxy, joinQueryString } from "@/utils";
 import { useFetch } from "@/hooks/useFetch";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useEffectUpdate } from "@/hooks/useEffectUpdate";
 
 const Comments: FC = () => {
   const router = useRouter();
-  const { siteId, slug } = router.query as { siteId: string; slug: string };
+
+  const { siteId, slug, oldest } = router.query as { [key: string]: string };
 
   const [limit, setLimit] = useState(5);
 
@@ -31,7 +33,7 @@ const Comments: FC = () => {
 
   const [isLoadingNewComments, setIsLoadingNewComments] = useState(false);
 
-  const [isSortedByOldest, setIsSortedByOldest] = useState(false);
+  const [isSortedByOldest, setIsSortedByOldest] = useState(oldest === "1");
 
   const { data: userData, status } = useSession();
   const user = userData as UserSession;
@@ -46,6 +48,15 @@ const Comments: FC = () => {
   useEffect(() => {
     setIsLoadingNewComments(false);
   }, [data?.comments.data.length]);
+
+  useEffectUpdate(() => {
+    router.push(
+      `/embed?${joinQueryString({
+        ...router.query,
+        oldest: Number(isSortedByOldest),
+      })}`
+    );
+  }, [isSortedByOldest]);
 
   // Get replies (depth=2)
   const handleGetReply = async (parentId: string, depth: number) => {

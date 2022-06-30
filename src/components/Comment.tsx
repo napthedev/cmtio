@@ -8,6 +8,8 @@ import { IoMdSend } from "react-icons/io";
 import { idFromRef } from "@/utils/fauna";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import ReactionPicker from "./ReactionPicker";
+import { REACTIONS_UI } from "@/shared/constant";
 
 interface CommentProps {
   comment: CommentType;
@@ -78,14 +80,51 @@ const Comment: FC<CommentProps> = ({
         />
       </div>
       <div className="flex-grow flex flex-col items-start">
-        <div className="bg-light-100 dark:bg-dark-100 rounded-2xl px-3 py-2 text-sm">
+        <div
+          className={`bg-light-100 dark:bg-dark-100 rounded-2xl px-3 py-2 text-sm relative ${
+            comment.reactions.length > 0 ? "mb-3" : ""
+          }`}
+        >
           <h6 className="font-medium">{comment.user.data.username}</h6>
           <p style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
             {comment.data.text}
           </p>
+
+          {comment.reactions.length > 0 && (
+            <div className="absolute bottom-0 right-0 translate-y-1/2 bg-[#3E4042] rounded-full flex items-center p-[2px]">
+              {comment.reactions
+                .sort((a, b) => a.count - b.count)
+                .slice(0, 3)
+                .map((icon, index) => (
+                  <img
+                    style={{
+                      transform: `translateX(-${5 * index}px)`,
+                      zIndex: 3 - index,
+                    }}
+                    key={icon.value}
+                    className="w-[18px] h-[18px] rounded-full"
+                    src={
+                      Object.values(REACTIONS_UI)[Number(icon.value) - 1].image
+                    }
+                    alt=""
+                  />
+                ))}
+              <span>
+                {comment.reactions.reduce((acc, reaction) => {
+                  acc += reaction.count;
+                  return acc;
+                }, 0)}
+              </span>
+            </div>
+          )}
         </div>
         <div className="text-sm flex gap-3 px-3 text-zinc-500 dark:text-zinc-400">
-          <button>Like</button>
+          <ReactionPicker
+            currentUserReaction={comment.current_user_reaction || 0}
+            commentId={idFromRef(comment.ref)}
+            depth={depth}
+          />
+
           <button
             onClick={async () => {
               // if depth = 3 (max depth) reply to its parent with the depth of 2

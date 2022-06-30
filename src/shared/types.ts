@@ -31,6 +31,8 @@ export interface CommentsResponse {
 }
 
 export interface CommentType {
+  current_user_reaction: number;
+  reactions: { count: number; value: number }[];
   reply_count: number;
   data: {
     text: string;

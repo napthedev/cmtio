@@ -2,11 +2,62 @@ import fauna from "faunadb";
 
 const q = fauna.query;
 
+const getCommentReactionsInfo = (comment: ReturnType<typeof q.Ref>) =>
+  q.Filter(
+    q.Map(
+      [1, 2, 3, 4, 5, 6, 7],
+      q.Lambda(
+        ["value"],
+        q.Let(
+          {
+            reactionRef: q.Match(
+              q.Index("reactions_by_value_and_comment"),
+              q.Var("value"),
+              comment
+            ),
+            reactionsCount: q.Count(q.Var("reactionRef")),
+          },
+          {
+            count: q.Var("reactionsCount"),
+            value: q.Var("value"),
+          }
+        )
+      )
+    ),
+    q.Lambda("item", q.GT(q.Select("count", q.Var("item")), 0))
+  );
+
+const getCurrentUserReaction = (
+  userId: string,
+  comment: ReturnType<typeof q.Ref>
+) =>
+  q.If(
+    q.IsEmpty(
+      q.Match(
+        q.Index("reactions_by_user_and_comment"),
+        q.Ref(q.Collection("users"), userId),
+        comment
+      )
+    ),
+    0,
+    q.Select(
+      ["data", "value"],
+      q.Get(
+        q.Match(
+          q.Index("reactions_by_user_and_comment"),
+          q.Ref(q.Collection("users"), userId),
+          comment
+        )
+      )
+    )
+  );
+
 export const getComment1 = (
   siteId: string,
   slug: string,
   limit: number,
-  isSortedByOldest: boolean
+  isSortedByOldest: boolean,
+  userId: string = ""
 ) =>
   q.Map(
     q.Paginate(
@@ -32,6 +83,11 @@ export const getComment1 = (
         q.Merge(q.Var("data"), {
           reply_count: q.Var("reply_count"),
           user: q.Var("user"),
+          reactions: getCommentReactionsInfo(q.Var("comment1")),
+          current_user_reaction: getCurrentUserReaction(
+            userId,
+            q.Var("comment1")
+          ),
         })
       )
     )
@@ -62,7 +118,7 @@ export const countComments = (siteId: string, slug: string) =>
     )
   );
 
-export const getComment2 = (parentId: string) =>
+export const getComment2 = (parentId: string, userId: string = "") =>
   q.Map(
     q.Paginate(
       q.Match(
@@ -83,12 +139,17 @@ export const getComment2 = (parentId: string) =>
         q.Merge(q.Var("data"), {
           reply_count: q.Var("reply_count"),
           user: q.Var("user"),
+          reactions: getCommentReactionsInfo(q.Var("comment2")),
+          current_user_reaction: getCurrentUserReaction(
+            userId,
+            q.Var("comment2")
+          ),
         })
       )
     )
   );
 
-export const getComment3 = (parentId: string) =>
+export const getComment3 = (parentId: string, userId: string = "") =>
   q.Map(
     q.Paginate(
       q.Match(
@@ -106,6 +167,11 @@ export const getComment3 = (parentId: string) =>
         q.Merge(q.Var("data"), {
           reply_count: 0,
           user: q.Var("user"),
+          reactions: getCommentReactionsInfo(q.Var("comment3")),
+          current_user_reaction: getCurrentUserReaction(
+            userId,
+            q.Var("comment3")
+          ),
         })
       )
     )
@@ -143,3 +209,31 @@ export const writeReply = (
       parent: q.Ref(q.Collection(`comment${depth - 1}`), parentId),
     },
   });
+
+export const addReaction = (
+  depth: number,
+  commentId: string,
+  value: number,
+  userId: string
+) =>
+  q.Let(
+    {
+      match: q.Match(
+        q.Index("reactions_by_user_and_comment"),
+        q.Ref(q.Collection("users"), userId),
+        q.Ref(q.Collection(`comment${depth}`), commentId)
+      ),
+      data: {
+        data: {
+          comment: q.Ref(q.Collection(`comment${depth}`), commentId),
+          user: q.Ref(q.Collection("users"), userId),
+          value,
+        },
+      },
+    },
+    q.If(
+      q.Exists(q.Var("match")),
+      q.Update(q.Select("ref", q.Get(q.Var("match"))), q.Var("data")),
+      q.Create(q.Collection("reactions"), q.Var("data"))
+    )
+  );

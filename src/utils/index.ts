@@ -27,3 +27,8 @@ export const imageProxy = (url: string) =>
   `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
 
 export const formatDate = (timestamp: number) => dayjs(timestamp).fromNow();
+
+export const joinQueryString = (query: { [key: string]: any }) =>
+  Object.keys(query)
+    .map((key) => `${key}=${query[key]}`)
+    .join("&");
