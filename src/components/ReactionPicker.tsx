@@ -8,12 +8,14 @@ interface ReactionPickerProps {
   currentUserReaction: number;
   depth: number;
   commentId: string;
+  refreshReactionsData: Function;
 }
 
 const ReactionPicker: FC<ReactionPickerProps> = ({
   currentUserReaction,
   depth,
   commentId,
+  refreshReactionsData,
 }) => {
   const [onHover, setOnHover] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -25,9 +27,7 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
   useEffectUpdate(() => {
     fetch(
       `/api/reactions?depth=${depth}&commentId=${commentId}&value=${currentReaction}`
-    );
-
-    // TODO: update reaction status
+    ).then(() => refreshReactionsData());
   }, [currentReaction]);
 
   const clearTimeOutRef = () => {

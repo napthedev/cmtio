@@ -21,6 +21,7 @@ interface CommentProps {
   setLoadedReplies: Function;
   depth: number;
   parentId?: string;
+  mutate: Function;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -31,6 +32,7 @@ const Comment: FC<CommentProps> = ({
   isReplyLoading,
   setLoadedReplies,
   depth,
+  mutate,
 }) => {
   const { data: userData, status } = useSession();
   const user = userData as UserSession;
@@ -70,6 +72,22 @@ const Comment: FC<CommentProps> = ({
     });
   };
 
+  const refreshReactionsData = () => {
+    if (depth === 1) {
+      mutate();
+    } else {
+      fetch(`/api/comments?depth=${depth}&parentId=${parentId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setLoadedReplies((prev: any) => {
+            const clone = JSON.parse(JSON.stringify(prev));
+            clone[parentId as string] = data;
+            return clone;
+          });
+        });
+    }
+  };
+
   return (
     <div key={idFromRef(comment.ref)} className="flex gap-2 mt-2">
       <div className="flex-shrink-0">
@@ -91,24 +109,34 @@ const Comment: FC<CommentProps> = ({
           </p>
 
           {comment.reactions.length > 0 && (
-            <div className="absolute bottom-0 right-0 translate-y-1/2 bg-[#3E4042] rounded-full flex items-center p-[2px]">
-              {comment.reactions
-                .sort((a, b) => a.count - b.count)
-                .slice(0, 3)
-                .map((icon, index) => (
-                  <img
-                    style={{
-                      transform: `translateX(-${5 * index}px)`,
-                      zIndex: 3 - index,
-                    }}
-                    key={icon.value}
-                    className="w-[18px] h-[18px] rounded-full"
-                    src={
-                      Object.values(REACTIONS_UI)[Number(icon.value) - 1].image
-                    }
-                    alt=""
-                  />
-                ))}
+            <div className="absolute bottom-0 right-0 translate-y-1/2 bg-[#3E4042] rounded-full flex items-center px-1 gap-1 py-[2px]">
+              <div
+                className="flex items-center overflow-hidden"
+                style={{
+                  width:
+                    comment.reactions.slice(0, 3).length * 18 -
+                    (comment.reactions.slice(0, 3).length - 1) * 5,
+                }}
+              >
+                {comment.reactions
+                  .sort((a, b) => b.count - a.count)
+                  .slice(0, 3)
+                  .map((icon, index) => (
+                    <img
+                      style={{
+                        transform: `translateX(-${5 * index}px)`,
+                        zIndex: 3 - index,
+                      }}
+                      key={icon.value}
+                      className="w-[18px] h-[18px] rounded-full"
+                      src={
+                        Object.values(REACTIONS_UI)[Number(icon.value) - 1]
+                          .image
+                      }
+                      alt=""
+                    />
+                  ))}
+              </div>
               <span>
                 {comment.reactions.reduce((acc, reaction) => {
                   acc += reaction.count;
@@ -123,6 +151,7 @@ const Comment: FC<CommentProps> = ({
             currentUserReaction={comment.current_user_reaction || 0}
             commentId={idFromRef(comment.ref)}
             depth={depth}
+            refreshReactionsData={refreshReactionsData}
           />
 
           <button
@@ -181,6 +210,7 @@ const Comment: FC<CommentProps> = ({
                 setLoadedReplies={setLoadedReplies}
                 depth={depth + 1}
                 parentId={idFromRef(comment.ref)}
+                mutate={mutate}
               />
             ))}
 

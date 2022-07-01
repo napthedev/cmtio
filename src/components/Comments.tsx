@@ -58,7 +58,7 @@ const Comments: FC = () => {
     );
   }, [isSortedByOldest]);
 
-  // Get replies (depth=2)
+  // Get replies (depth=2|3)
   const handleGetReply = async (parentId: string, depth: number) => {
     setIsReplyLoading([...new Set([...isReplyLoading, parentId])]);
 
@@ -205,6 +205,7 @@ const Comments: FC = () => {
           isReplyLoading={isReplyLoading}
           setLoadedReplies={setLoadedReplies}
           depth={1}
+          mutate={mutate}
         />
       ))}
 
