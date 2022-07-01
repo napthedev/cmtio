@@ -3,6 +3,7 @@ import { FC, useRef, useState } from "react";
 import ClickAwayListener from "./ClickAwayListener";
 import { REACTIONS_UI } from "@/shared/constant";
 import { useEffectUpdate } from "@/hooks/useEffectUpdate";
+import { useSession } from "next-auth/react";
 
 interface ReactionPickerProps {
   currentUserReaction: number;
@@ -17,6 +18,8 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
   commentId,
   refreshReactionsData,
 }) => {
+  const { status } = useSession();
+
   const [onHover, setOnHover] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -59,7 +62,9 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
               clearTimeOutRef();
               setOnHover(false);
             }}
-            className="relative cursor-pointer select-none z-10"
+            className={`relative cursor-pointer select-none z-10 ${
+              status === "unauthenticated" ? "pointer-events-none" : ""
+            }`}
           >
             <button
               className="flex gap-1 items-center"

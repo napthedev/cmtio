@@ -9,7 +9,7 @@ import { idFromRef } from "@/utils/fauna";
 export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   theme: {
-    colorScheme: "dark",
+    colorScheme: "auto",
     logo: "/icon.png",
   },
   providers: [

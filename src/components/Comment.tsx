@@ -2,7 +2,6 @@ import { CommentType, CommentsResponse, UserSession } from "@/shared/types";
 import { FC, FormEvent, useState } from "react";
 import { formatDate, imageProxy } from "@/utils";
 
-import { BiLogIn } from "react-icons/bi";
 import { BsArrowReturnRight } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import { idFromRef } from "@/utils/fauna";
@@ -214,68 +213,57 @@ const Comment: FC<CommentProps> = ({
               />
             ))}
 
-            <div className="flex gap-2 items-center my-2">
-              <div>
-                <img
-                  className="w-8 h-8 rounded-full object-cover"
-                  src={
-                    user?.user?.image
-                      ? imageProxy(user.user.image)
-                      : "/default-avatar.png"
-                  }
-                  alt=""
-                />
-              </div>
-              <form
-                autoComplete="off"
-                onSubmit={handleFormSubmit}
-                onClick={() => {
-                  if (status !== "authenticated") {
-                    console.log("Open popup");
-                  }
-                }}
-                className={`flex-grow relative ${
-                  status !== "authenticated" ? "cursor-pointer" : ""
-                }`}
-              >
-                <input
-                  id={`reply-${idFromRef(comment.ref)}`}
-                  className={`w-full h-9 outline-none bg-light-100 dark:bg-dark-100 rounded-full pl-3 pr-10 ${
+            {status !== "unauthenticated" && (
+              <div className="flex gap-2 items-center my-2">
+                <div>
+                  <img
+                    className="w-8 h-8 rounded-full object-cover"
+                    src={
+                      user?.user?.image
+                        ? imageProxy(user.user.image)
+                        : "/default-avatar.png"
+                    }
+                    alt=""
+                  />
+                </div>
+                <form
+                  autoComplete="off"
+                  onSubmit={handleFormSubmit}
+                  className={`flex-grow relative ${
                     status !== "authenticated" ? "cursor-pointer" : ""
                   }`}
-                  type="text"
-                  placeholder={
-                    status === "authenticated"
-                      ? `Reply to ${
-                          comment.user.data.email === user?.user?.email
-                            ? "yourself"
-                            : comment.user.data.username
-                        }...`
-                      : "Please sign in to reply"
-                  }
-                  readOnly={!(status === "authenticated")}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                />
-                {isSubmitLoading ? (
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <div className="w-5 h-5 rounded-full border-2 border-t-transparent border-gray-400 animate-spin"></div>
-                  </div>
-                ) : (
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2">
-                    {status === "authenticated" ? (
+                >
+                  <input
+                    id={`reply-${idFromRef(comment.ref)}`}
+                    className={`w-full h-9 outline-none bg-light-100 dark:bg-dark-100 rounded-full pl-3 pr-10 ${
+                      status !== "authenticated" ? "cursor-pointer" : ""
+                    }`}
+                    type="text"
+                    placeholder={`Reply to ${
+                      comment.user.data.email === user?.user?.email
+                        ? "yourself"
+                        : comment.user.data.username
+                    }...`}
+                    readOnly={!(status === "authenticated")}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                  {isSubmitLoading ? (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                      <div className="w-5 h-5 rounded-full border-2 border-t-transparent border-gray-400 animate-spin"></div>
+                    </div>
+                  ) : (
+                    <button className="absolute right-2 top-1/2 -translate-y-1/2">
                       <IoMdSend
                         className={`h-6 w-6 transition ${
                           inputValue.trim() ? "fill-primary" : "fill-gray-400"
                         }`}
                       />
-                    ) : (
-                      <BiLogIn className="h-6 w-6 fill-primary" />
-                    )}
-                  </button>
-                )}
-              </form>
-            </div>
+                    </button>
+                  )}
+                </form>
+              </div>
+            )}
           </div>
         )}
       </div>
