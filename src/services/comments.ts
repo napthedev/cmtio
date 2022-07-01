@@ -31,26 +31,28 @@ const getCurrentUserReaction = (
   userId: string,
   comment: ReturnType<typeof q.Ref>
 ) =>
-  q.If(
-    q.IsEmpty(
-      q.Match(
-        q.Index("reactions_by_user_and_comment"),
-        q.Ref(q.Collection("users"), userId),
-        comment
-      )
-    ),
-    0,
-    q.Select(
-      ["data", "value"],
-      q.Get(
-        q.Match(
-          q.Index("reactions_by_user_and_comment"),
-          q.Ref(q.Collection("users"), userId),
-          comment
+  userId
+    ? q.If(
+        q.IsEmpty(
+          q.Match(
+            q.Index("reactions_by_user_and_comment"),
+            q.Ref(q.Collection("users"), userId),
+            comment
+          )
+        ),
+        0,
+        q.Select(
+          ["data", "value"],
+          q.Get(
+            q.Match(
+              q.Index("reactions_by_user_and_comment"),
+              q.Ref(q.Collection("users"), userId),
+              comment
+            )
+          )
         )
       )
-    )
-  );
+    : 0;
 
 export const getComment1 = (
   siteId: string,

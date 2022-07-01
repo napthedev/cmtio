@@ -43,4 +43,32 @@ export default NextAuth({
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        path: "/",
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      },
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        path: "/",
+        sameSite: "none",
+        secure: true,
+      },
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: {
+        path: "/",
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      },
+    },
+  },
 });

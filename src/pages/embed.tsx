@@ -6,17 +6,10 @@ import { getSession } from "next-auth/react";
 import { getSiteById } from "@/services/sites";
 
 interface EmbedProps {
-  isOriginNotAllowed: boolean;
   isInvalidRequest: boolean;
 }
 
-const Embed: FC<EmbedProps> = ({
-  isOriginNotAllowed = false,
-  isInvalidRequest = false,
-}) => {
-  if (isOriginNotAllowed)
-    return <div className="my-6 text-center">Origin is not allowed</div>;
-
+const Embed: FC<EmbedProps> = ({ isInvalidRequest = false }) => {
   if (isInvalidRequest)
     return <div className="my-6 text-center">Missing request params</div>;
 
@@ -27,6 +20,7 @@ export default Embed;
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
+  res,
   query,
 }) => {
   const siteId = query.siteId as string;
@@ -45,17 +39,12 @@ export const getServerSideProps: GetServerSideProps = async ({
     JSON.stringify(await client.query(getSiteById(siteId)))
   );
 
-  if (
-    !site.data.allowed_origins.some((origin: string) =>
-      origin.includes(req.headers.host as string)
-    )
-  ) {
-    return {
-      props: {
-        isOriginNotAllowed: true,
-      },
-    };
-  }
+  res.setHeader(
+    "Content-Security-Policy",
+    `frame-ancestors 'self' ${site.data.allowed_origins
+      .map((origin: string) => new URL(origin).hostname)
+      .join(" ")};`
+  );
 
   return {
     props: {
