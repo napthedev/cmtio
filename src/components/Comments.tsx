@@ -35,7 +35,6 @@ const Comments: FC = () => {
 
   const [isSortedByOldest, setIsSortedByOldest] = useState(oldest === "1");
 
-  const [popupWindow, setPopupWindow] = useState<Window | null>(null);
   const popupCheckInterval = useRef<ReturnType<typeof setInterval> | null>(
     null
   );
@@ -203,8 +202,6 @@ const Comments: FC = () => {
                     clearInterval(popupCheckInterval.current as any);
                   }
                 }, 200);
-
-                setPopupWindow(popupWindow);
               }
             }}
             className={`flex-grow relative ${

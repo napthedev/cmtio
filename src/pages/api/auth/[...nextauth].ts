@@ -31,7 +31,6 @@ export default NextAuth({
       return { ...session, user: { ...session.user, id: token.sub } };
     },
     signIn: async ({ user }) => {
-      console.log(user);
       const result = JSON.parse(
         JSON.stringify(await client.query(createOrUpdateUser(user as any)))
       );
