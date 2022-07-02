@@ -6,8 +6,6 @@ export function middleware() {
   response.headers.set("Access-Control-Allow-Origin", "*");
   response.headers.set("Access-Control-Allow-Headers", "*");
   response.headers.set("Access-Control-Allow-Methods", "*");
-}
 
-export const config = {
-  matcher: "*",
-};
+  return response;
+}

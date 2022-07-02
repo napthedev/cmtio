@@ -8,7 +8,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (!+req.query.depth || !req.query.commentId || req.query.value === null)
+  if (
+    !Number(req.query.depth) ||
+    !req.query.commentId ||
+    req.query.value === null
+  )
     return res.status(400).send("Invalid request");
 
   const session = (await getSession({ req })) as UserSession;
@@ -20,9 +24,9 @@ export default async function handler(
 
   const result = await client.query(
     addReaction(
-      +req.query.depth,
+      Number(req.query.depth),
       req.query.commentId as string,
-      +req.query.value,
+      Number(req.query.value),
       userId
     )
   );

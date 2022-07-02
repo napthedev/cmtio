@@ -99,6 +99,7 @@ const Comments: FC = () => {
         depth: 1,
         siteId,
         slug,
+        // max input length is 5000
         text: inputValue.trim().slice(0, 5000),
       }),
     }).finally(() => {
@@ -160,8 +161,10 @@ const Comments: FC = () => {
             onSubmit={handleFormSubmit}
             onClick={() => {
               if (status !== "authenticated") {
+                // same width and height
                 const size = 400;
 
+                // https://stackoverflow.com/questions/4068373/center-a-popup-window-on-screen
                 const dualScreenLeft =
                   window.screenLeft !== undefined
                     ? window.screenLeft
@@ -194,11 +197,13 @@ const Comments: FC = () => {
                   },left=${left},top=${top}`
                 );
 
+                // check when the popup is closed
                 popupCheckInterval.current = setInterval(() => {
-                  const event = new Event("visibilitychange");
-                  document.dispatchEvent(event);
-
                   if (popupWindow?.closed) {
+                    // ask next-auth to refresh the session
+                    const event = new Event("visibilitychange");
+                    document.dispatchEvent(event);
+
                     clearInterval(popupCheckInterval.current as any);
                   }
                 }, 200);

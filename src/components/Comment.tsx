@@ -58,9 +58,9 @@ const Comment: FC<CommentProps> = ({
       body: JSON.stringify({
         siteId,
         slug,
+        // max input size is 5000
         text: inputValue.trim().slice(0, 5000),
         parentId: idFromRef(comment.ref),
-
         // reply depth must be above 1 unit
         depth: depth + 1,
       }),
