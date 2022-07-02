@@ -67,7 +67,9 @@ export const getServerSideProps: GetServerSideProps = async ({
       ...new Set(
         site.data.allowed_origins.map((origin: string) => {
           const url = new URL(origin);
-          return url.hostname + (url.port ? `:${url.port}` : "");
+          return url.hostname === "localhost"
+            ? "http://localhost:* https://localhost:*"
+            : url.hostname + (url.port ? `:${url.port}` : "");
         })
       ),
     ].join(" ")};`
