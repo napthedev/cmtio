@@ -24,7 +24,9 @@ dayjs.updateLocale("en", {
 });
 
 export const imageProxy = (url: string) =>
-  `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+  `https://images.weserv.nl/?url=${encodeURIComponent(
+    url
+  )}&w=32&h=32&output=webp`;
 
 export const formatDate = (timestamp: number) => dayjs(timestamp).fromNow();
 
