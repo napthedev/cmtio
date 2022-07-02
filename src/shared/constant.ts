@@ -18,22 +18,22 @@ export const REACTIONS_UI: {
   Care: {
     icon: "/reactions/care.svg",
     image: "/reactions/care.svg",
-    color: "#F7EF75",
+    color: "#F7B125",
   },
   Haha: {
     icon: "/reactions/haha.svg",
     image: "/reactions/haha.svg",
-    color: "#F7EF75",
+    color: "#F7B125",
   },
   Wow: {
     icon: "/reactions/wow.svg",
     image: "/reactions/wow.svg",
-    color: "#F7EF75",
+    color: "#F7B125",
   },
   Sad: {
     icon: "/reactions/sad.svg",
     image: "/reactions/sad.svg",
-    color: "#F7EF75",
+    color: "#F7B125",
   },
   Angry: {
     icon: "/reactions/angry.svg",

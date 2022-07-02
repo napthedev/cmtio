@@ -247,6 +247,10 @@ const Comments: FC = () => {
           </form>
         </div>
 
+        {data.comments.data.length === 0 && (
+          <div className="my-6 text-center">Be the first one to comment</div>
+        )}
+
         {data.comments.data.map((comment1) => (
           <Comment
             key={idFromRef(comment1.ref)}

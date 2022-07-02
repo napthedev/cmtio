@@ -108,7 +108,7 @@ const Comment: FC<CommentProps> = ({
           </p>
 
           {comment.reactions.length > 0 && (
-            <div className="absolute bottom-0 right-0 translate-y-1/2 bg-[#3E4042] rounded-full flex items-center px-1 gap-1 py-[2px]">
+            <div className="absolute bottom-0 right-0 translate-y-1/2 bg-gray-200 dark:bg-[#3E4042] rounded-full flex items-center px-1 gap-1 py-[2px]">
               <div
                 className="flex items-center overflow-hidden"
                 style={{
@@ -186,7 +186,7 @@ const Comment: FC<CommentProps> = ({
               className="flex items-center gap-1 text-zinc-600 dark:text-zinc-300 text-sm ml-2 mt-1"
             >
               {isReplyLoading.includes(idFromRef(comment.ref)) ? (
-                <span className="w-3 h-3 rounded-full border-2 border-t-transparent border-white animate-spin"></span>
+                <span className="w-3 h-3 rounded-full border-2 border-zinc-600 dark:border-zinc-300 !border-t-transparent animate-spin"></span>
               ) : (
                 <BsArrowReturnRight className="fill-zinc-600 dark:fill-zinc-300" />
               )}

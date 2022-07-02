@@ -100,7 +100,7 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
             </button>
 
             <div
-              className={`w-max rounded-full absolute left-[-15px] flex gap-2 bg-dark-100 border border-dark-200 p-1 top-[-36px] transition-all ${
+              className={`w-max rounded-full absolute left-[-15px] flex gap-2 bg-light-100 dark:bg-dark-100 border border-light-200 dark:border-dark-200 p-1 top-[-36px] transition-all ${
                 onHover
                   ? "translate-y-0 opacity-100 visible"
                   : "translate-y-4 opacity-0 invisible"
@@ -110,7 +110,7 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
                 <div
                   data-content={i}
                   key={i}
-                  className="relative hover:before:content-[attr(data-content)] before:opacity-0 before:transition hover:before:opacity-100 before:absolute before:-top-9 before:z-10 hover:before:bg-dark before:text-gray-200 before:left-1/2 before:-translate-x-1/2 before:rounded-full before:px-2"
+                  className="relative hover:before:content-[attr(data-content)] before:opacity-0 before:transition hover:before:opacity-100 before:absolute before:-top-9 before:z-10 hover:before:bg-white dark:hover:before:bg-dark before:text-zinc-800 dark:before:text-gray-200 before:left-1/2 before:-translate-x-1/2 before:rounded-full before:px-2"
                 >
                   <img
                     className="w-7 h-7 transition duration-300 hover:scale-[120%] active:scale-95 origin-bottom transform scale-100 rounded-full relative "

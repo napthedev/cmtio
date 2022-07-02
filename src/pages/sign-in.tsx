@@ -24,7 +24,7 @@ const SignIn: NextPage = () => {
             A comment system alternatives to Disqus
           </p>
         </div>
-        <div className="md:flex-1 flex flex-col items-center justify-center gap-3">
+        <div className="md:flex-1 flex flex-col items-center justify-center gap-3 text-white">
           <button
             disabled={loading}
             onClick={() => signInWithProvider("google")}

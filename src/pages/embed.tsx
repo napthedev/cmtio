@@ -1,15 +1,37 @@
 import Comments from "@/components/Comments";
-import { FC } from "react";
+import { FC, useEffect, useRef } from "react";
 import { GetServerSideProps } from "next";
 import { client } from "@/shared/client";
 import { getSession } from "next-auth/react";
 import { getSiteById } from "@/services/sites";
+import { useRouter } from "next/router";
 
 interface EmbedProps {
   isInvalidRequest: boolean;
 }
 
 const Embed: FC<EmbedProps> = ({ isInvalidRequest = false }) => {
+  const { siteId, slug } = useRouter().query;
+  const heightRef = useRef(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (heightRef.current !== document.body.scrollHeight)
+        window.parent?.postMessage(
+          {
+            siteId,
+            slug,
+            height: document.body.scrollHeight,
+          },
+          "*"
+        );
+    }, 100);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [siteId, slug]);
+
   if (isInvalidRequest)
     return <div className="my-6 text-center">Missing request params</div>;
 
@@ -41,15 +63,26 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   res.setHeader(
     "Content-Security-Policy",
-    `frame-ancestors 'self' ${site.data.allowed_origins
-      .map((origin: string) => new URL(origin).hostname)
-      .join(" ")};`
+    `frame-ancestors 'self' ${[
+      ...new Set(
+        site.data.allowed_origins.map((origin: string) => {
+          const url = new URL(origin);
+          return url.hostname + (url.port ? `:${url.port}` : "");
+        })
+      ),
+    ].join(" ")};`
   );
 
   return {
     props: {
       session,
       site,
+      theme:
+        query.theme === "dark"
+          ? "dark"
+          : query.theme === "light"
+          ? "light"
+          : null,
     },
   };
 };
