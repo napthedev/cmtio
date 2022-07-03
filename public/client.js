@@ -14,6 +14,7 @@
       : script.dataset.theme === "light"
       ? "light"
       : null;
+  const sorting = script.dataset.sorting === "oldest";
 
   if (!siteId) {
     throw new Error("[cmtio] No site id provided");
@@ -31,7 +32,7 @@
     const iframe = document.createElement("iframe");
     iframe.src = `${origin}/embed?siteId=${siteId}&slug=${slug}&theme=${
       theme || ""
-    }`;
+    }&oldest=${Number(sorting)}`;
     iframe.style.width = "100%";
     iframe.setAttribute("frameborder", "0");
 
