@@ -112,9 +112,9 @@ const Comments: FC = () => {
   };
 
   if (error)
-    return <div className="my-6 text-center">Failed to load comments</div>;
+    return <div className="py-6 text-center">Failed to load comments</div>;
 
-  if (!data) return <div className="my-6 text-center">Loading comments...</div>;
+  if (!data) return <div className="py-6 text-center">Loading comments...</div>;
 
   return (
     <>
@@ -250,7 +250,7 @@ const Comments: FC = () => {
         </div>
 
         {data.comments.data.length === 0 && (
-          <div className="my-6 text-center">Be the first one to comment</div>
+          <div className="py-6 text-center">Be the first one to comment</div>
         )}
 
         {data.comments.data.map((comment1) => (
