@@ -14,7 +14,10 @@ const Demo: NextPage = () => {
         </div>
         <p>A comment system alternative to Disqus</p>
 
-        <div className="border border-zinc-800 mt-8" id="cmtio"></div>
+        <div
+          className="border border-zinc-200 dark:border-zinc-800 mt-8"
+          id="cmtio"
+        ></div>
 
         <Script
           src="/client.js"
