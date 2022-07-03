@@ -19,9 +19,11 @@ import { useEffectUpdate } from "@/hooks/useEffectUpdate";
 const Comments: FC = () => {
   const router = useRouter();
 
-  const { siteId, slug, oldest } = router.query as { [key: string]: string };
+  const { siteId, slug, oldest, commentsPerPage } = router.query as {
+    [key: string]: string;
+  };
 
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(Number(commentsPerPage) || 5);
 
   const [inputValue, setInputValue] = useState("");
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
@@ -274,7 +276,7 @@ const Comments: FC = () => {
               <button
                 onClick={() => {
                   setIsLoadingNewComments(true);
-                  setLimit(limit + 5);
+                  setLimit(limit + Number(commentsPerPage) || 5);
                 }}
                 className="text-zinc-500 dark:text-zinc-400 hover:underline"
               >

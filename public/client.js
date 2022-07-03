@@ -15,6 +15,8 @@
       ? "light"
       : null;
   const sorting = script.dataset.sorting === "oldest";
+  const commentsPerPage =
+    script.dataset.commentsPerPage || script.dataset["comments-per-page"];
 
   if (!siteId) {
     throw new Error("[cmtio] No site id provided");
@@ -32,7 +34,7 @@
     const iframe = document.createElement("iframe");
     iframe.src = `${origin}/embed?siteId=${siteId}&slug=${slug}&theme=${
       theme || ""
-    }&oldest=${Number(sorting)}`;
+    }&oldest=${Number(sorting)}&commentsPerPage=${commentsPerPage || ""}`;
     iframe.style.width = "100%";
     iframe.setAttribute("frameborder", "0");
 
