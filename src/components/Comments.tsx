@@ -276,7 +276,7 @@ const Comments: FC = () => {
               <button
                 onClick={() => {
                   setIsLoadingNewComments(true);
-                  setLimit(limit + Number(commentsPerPage) || 5);
+                  setLimit(limit + (Number(commentsPerPage) || 5));
                 }}
                 className="text-zinc-500 dark:text-zinc-400 hover:underline"
               >

@@ -54,3 +54,13 @@ interface User {
     photo_url: string;
   };
 }
+
+export interface SiteResponse {
+  ref: Ref;
+  ts: number;
+  data: {
+    name: string;
+    user: Ref;
+    allowed_origins: string[];
+  };
+}

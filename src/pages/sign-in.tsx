@@ -21,7 +21,7 @@ const SignIn: NextPage = () => {
             CmtIO
           </h1>
           <p className="text-3xl max-w-[460px] text-center md:text-left">
-            A comment system alternatives to Disqus
+            A comment system alternative to Disqus
           </p>
         </div>
         <div className="md:flex-1 flex flex-col items-center justify-center gap-3 text-white">
