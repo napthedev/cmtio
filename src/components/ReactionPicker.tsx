@@ -62,8 +62,19 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
               clearTimeOutRef();
               setOnHover(false);
             }}
+            onTouchStart={() => {
+              clearTimeOutRef();
+
+              timeoutRef.current = setTimeout(() => {
+                setOnHover(true);
+              }, 300);
+            }}
+            onTouchEnd={() => {
+              clearTimeOutRef();
+              setOnHover(false);
+            }}
             className={`relative cursor-pointer select-none z-10 ${
-              status === "unauthenticated" ? "pointer-events-none" : ""
+              status === "unauthenticated" ? "" : ""
             }`}
           >
             <button
@@ -117,6 +128,10 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
                     draggable={false}
                     key={i}
                     src={REACTIONS_UI[i].image}
+                    onTouchEnd={() => {
+                      setCurrentReaction(index + 1);
+                      setOnHover(false);
+                    }}
                     onClick={() => {
                       setCurrentReaction(index + 1);
                       setOnHover(false);

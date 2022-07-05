@@ -6,13 +6,13 @@ const Demo: NextPage = () => {
     return <div>Demo site ID hasn&apos;t been specified</div>;
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mx-3">
       <div className="w-full max-w-xl my-8">
-        <div className="flex items-center gap-4 my-4">
+        <div className="flex items-center gap-4 my-4 mx-4 md:mx-0">
           <img className="w-12 h-12" src="/icon.png" alt="" />
           <h1 className="text-3xl">CmtIO</h1>
         </div>
-        <p>A comment system alternative to Disqus</p>
+        <p className="mx-4 md:mx-0">A comment system alternative to Disqus</p>
 
         <div
           className="border border-zinc-200 dark:border-zinc-800 mt-8"
