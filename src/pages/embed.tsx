@@ -5,12 +5,15 @@ import { client } from "@/shared/client";
 import { getSession } from "next-auth/react";
 import { getSiteById } from "@/services/sites";
 import { useRouter } from "next/router";
+import { UserSession } from "@/shared/types";
+import { idFromRef } from "@/utils/fauna";
 
 interface EmbedProps {
   isInvalidRequest: boolean;
+  isAdmin: boolean;
 }
 
-const Embed: FC<EmbedProps> = ({ isInvalidRequest = false }) => {
+const Embed: FC<EmbedProps> = ({ isInvalidRequest = false, isAdmin }) => {
   const { siteId, slug } = useRouter().query;
   const heightRef = useRef(0);
 
@@ -35,7 +38,7 @@ const Embed: FC<EmbedProps> = ({ isInvalidRequest = false }) => {
   if (isInvalidRequest)
     return <div className="my-6 text-center">Missing request params</div>;
 
-  return <Comments />;
+  return <Comments isAdmin={isAdmin} />;
 };
 
 export default Embed;
@@ -55,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
 
-  const session = await getSession({ req });
+  const session = (await getSession({ req })) as UserSession;
 
   const site = JSON.parse(
     JSON.stringify(await client.query(getSiteById(siteId)))
@@ -75,10 +78,12 @@ export const getServerSideProps: GetServerSideProps = async ({
     ].join(" ")};`
   );
 
+  const isAdmin = session?.user?.id === idFromRef(site.data.user);
+
   return {
     props: {
       session,
-      site,
+      isAdmin,
       theme:
         query.theme === "dark"
           ? "dark"

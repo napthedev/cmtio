@@ -36,6 +36,7 @@
       theme || ""
     }&oldest=${Number(sorting)}&commentsPerPage=${commentsPerPage || ""}`;
     iframe.style.width = "100%";
+    iframe.style.height = "0";
     iframe.setAttribute("frameborder", "0");
 
     container.appendChild(iframe);

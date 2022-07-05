@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 
 import ClickAwayListener from "./ClickAwayListener";
-import { FaUser } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import Link from "next/link";
 import { imageProxy } from "@/utils";
@@ -36,12 +35,6 @@ const Navbar: FC = () => {
                 isDropdownOpened ? "opacity-100 visible" : "opacity-0 invisible"
               }`}
             >
-              <Link href="/profile">
-                <a className="flex items-center gap-2 px-3 py-2 bg-light-100 dark:bg-dark-100 hover:brightness-125 transition">
-                  <FaUser className="fill-black dark:fill-white w-6 h-5" />
-                  <span>Profile</span>
-                </a>
-              </Link>
               <button
                 onClick={() => signOut()}
                 className="flex items-center gap-2 px-3 py-2 bg-light-100 dark:bg-dark-100 hover:brightness-125 transition"

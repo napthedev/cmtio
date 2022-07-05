@@ -239,3 +239,9 @@ export const addReaction = (
       q.Create(q.Collection("reactions"), q.Var("data"))
     )
   );
+
+export const getCommentByIdAndDepth = (commentId: string, depth: number) =>
+  q.Get(q.Ref(q.Collection(`comment${depth}`), commentId));
+
+export const deleteComment = (commentId: string, depth: number) =>
+  q.Delete(q.Ref(q.Collection(`comment${depth}`), commentId));

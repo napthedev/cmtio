@@ -2,13 +2,14 @@ import { CommentType, CommentsResponse, UserSession } from "@/shared/types";
 import { FC, FormEvent, useState } from "react";
 import { formatDate, imageProxy } from "@/utils";
 
-import { BsArrowReturnRight } from "react-icons/bs";
+import { BsArrowReturnRight, BsThreeDots } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import { idFromRef } from "@/utils/fauna";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import ReactionPicker from "./ReactionPicker";
 import { REACTIONS_UI } from "@/shared/constant";
+import ClickAwayListener from "./ClickAwayListener";
 
 interface CommentProps {
   comment: CommentType;
@@ -21,6 +22,7 @@ interface CommentProps {
   depth: number;
   parentId?: string;
   mutate: Function;
+  isAdmin: boolean;
 }
 
 const Comment: FC<CommentProps> = ({
@@ -32,6 +34,7 @@ const Comment: FC<CommentProps> = ({
   setLoadedReplies,
   depth,
   mutate,
+  isAdmin,
 }) => {
   const { data: userData, status } = useSession();
   const user = userData as UserSession;
@@ -41,6 +44,8 @@ const Comment: FC<CommentProps> = ({
 
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  const [isDropdownOpened, setIsDropdownOpened] = useState(false);
 
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -71,7 +76,7 @@ const Comment: FC<CommentProps> = ({
     });
   };
 
-  const refreshReactionsData = () => {
+  const refreshCommentsData = () => {
     if (depth === 1) {
       mutate();
     } else {
@@ -87,6 +92,14 @@ const Comment: FC<CommentProps> = ({
     }
   };
 
+  const deleteComment = () => {
+    fetch(
+      `/api/delete-comment?commentId=${idFromRef(comment.ref)}&depth=${depth}`
+    ).finally(() => {
+      refreshCommentsData();
+    });
+  };
+
   return (
     <div key={idFromRef(comment.ref)} className="flex gap-2 mt-2">
       <div className="flex-shrink-0">
@@ -97,52 +110,89 @@ const Comment: FC<CommentProps> = ({
         />
       </div>
       <div className="flex-grow flex flex-col items-start">
-        <div
-          className={`bg-light-100 dark:bg-dark-100 rounded-2xl px-3 py-2 text-sm relative ${
-            comment.reactions.length > 0 ? "mb-3" : ""
-          }`}
-        >
-          <h6 className="font-medium">{comment.user.data.username}</h6>
-          <p style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
-            {comment.data.text}
-          </p>
+        <div className="flex gap-2 group w-full">
+          <div
+            className={`bg-light-100 dark:bg-dark-100 rounded-2xl px-3 py-2 text-sm relative ${
+              comment.reactions.length > 0 ? "mb-3" : ""
+            }`}
+          >
+            <h6 className="font-medium">{comment.user.data.username}</h6>
+            <p style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
+              {comment.data.text}
+            </p>
 
-          {comment.reactions.length > 0 && (
-            <div className="absolute bottom-0 right-0 translate-y-1/2 bg-gray-200 dark:bg-[#3E4042] rounded-full flex items-center px-1 gap-1 py-[2px]">
-              <div
-                className="flex items-center overflow-hidden"
-                style={{
-                  width:
-                    comment.reactions.slice(0, 3).length * 18 -
-                    (comment.reactions.slice(0, 3).length - 1) * 5,
-                }}
-              >
-                {comment.reactions
-                  .sort((a, b) => b.count - a.count)
-                  .slice(0, 3)
-                  .map((icon, index) => (
-                    <img
-                      style={{
-                        transform: `translateX(-${5 * index}px)`,
-                        zIndex: 3 - index,
-                      }}
-                      key={icon.value}
-                      className="w-[18px] h-[18px] rounded-full"
-                      src={
-                        Object.values(REACTIONS_UI)[Number(icon.value) - 1]
-                          .image
-                      }
-                      alt=""
-                    />
-                  ))}
+            {comment.reactions.length > 0 && (
+              <div className="absolute bottom-0 right-0 translate-y-1/2 bg-gray-200 dark:bg-[#3E4042] rounded-full flex items-center px-1 gap-1 py-[2px]">
+                <div
+                  className="flex items-center overflow-hidden"
+                  style={{
+                    width:
+                      comment.reactions.slice(0, 3).length * 18 -
+                      (comment.reactions.slice(0, 3).length - 1) * 5,
+                  }}
+                >
+                  {comment.reactions
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 3)
+                    .map((icon, index) => (
+                      <img
+                        style={{
+                          transform: `translateX(-${5 * index}px)`,
+                          zIndex: 3 - index,
+                        }}
+                        key={icon.value}
+                        className="w-[18px] h-[18px] rounded-full"
+                        src={
+                          Object.values(REACTIONS_UI)[Number(icon.value) - 1]
+                            .image
+                        }
+                        alt=""
+                      />
+                    ))}
+                </div>
+                <span>
+                  {comment.reactions.reduce((acc, reaction) => {
+                    acc += reaction.count;
+                    return acc;
+                  }, 0)}
+                </span>
               </div>
-              <span>
-                {comment.reactions.reduce((acc, reaction) => {
-                  acc += reaction.count;
-                  return acc;
-                }, 0)}
-              </span>
-            </div>
+            )}
+          </div>
+
+          {isAdmin && (
+            <ClickAwayListener onClickAway={() => setIsDropdownOpened(false)}>
+              {(ref) => (
+                <div
+                  ref={ref}
+                  className="flex-shrink-0 flex items-center h-full relative"
+                >
+                  <button
+                    onClick={() => setIsDropdownOpened(!isDropdownOpened)}
+                    className="bg-transparent hover:bg-[#00000016] dark:hover:!bg-[#ffffff16] rounded-full transition p-2 opacity-0 group-hover:opacity-100"
+                  >
+                    <BsThreeDots />
+                  </button>
+                  <div
+                    className={`absolute top-[calc(50%+15px)] right-0 flex flex-col items-stretch [&>*]:whitespace-nowrap bg-light-100 dark:bg-dark-100 rounded-md overflow-hidden transition-all z-50 border dark:border-zinc-700 shadow ${
+                      isDropdownOpened
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible"
+                    }`}
+                  >
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpened(false);
+                        deleteComment();
+                      }}
+                      className="p-2 bg-light-100 dark:bg-dark-100 hover:brightness-125 transition"
+                    >
+                      <span>Delete comment</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </ClickAwayListener>
           )}
         </div>
         <div className="text-sm flex gap-3 px-3 text-zinc-500 dark:text-zinc-400">
@@ -150,7 +200,7 @@ const Comment: FC<CommentProps> = ({
             currentUserReaction={comment.current_user_reaction || 0}
             commentId={idFromRef(comment.ref)}
             depth={depth}
-            refreshReactionsData={refreshReactionsData}
+            refreshReactionsData={refreshCommentsData}
           />
 
           <button
@@ -210,6 +260,7 @@ const Comment: FC<CommentProps> = ({
                 depth={depth + 1}
                 parentId={idFromRef(comment.ref)}
                 mutate={mutate}
+                isAdmin={isAdmin}
               />
             ))}
 

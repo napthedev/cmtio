@@ -16,7 +16,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffectUpdate } from "@/hooks/useEffectUpdate";
 
-const Comments: FC = () => {
+interface CommentsProps {
+  isAdmin: boolean;
+}
+
+const Comments: FC<CommentsProps> = ({ isAdmin }) => {
   const router = useRouter();
 
   const { siteId, slug, oldest, commentsPerPage } = router.query as {
@@ -263,6 +267,7 @@ const Comments: FC = () => {
             setLoadedReplies={setLoadedReplies}
             depth={1}
             mutate={mutate}
+            isAdmin={isAdmin}
           />
         ))}
 
