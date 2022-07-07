@@ -195,7 +195,7 @@ const Comment: FC<CommentProps> = ({
             </ClickAwayListener>
           )}
         </div>
-        <div className="text-sm flex gap-3 px-3 text-zinc-500 dark:text-zinc-400">
+        <div className="text-sm flex gap-3 px-3 text-zinc-500 dark:text-zinc-400 [&_*]:select-none">
           <ReactionPicker
             currentUserReaction={comment.current_user_reaction || 0}
             commentId={idFromRef(comment.ref)}

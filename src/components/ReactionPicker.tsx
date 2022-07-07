@@ -74,7 +74,7 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
               setOnHover(false);
             }}
             className={`relative cursor-pointer select-none z-10 ${
-              status === "unauthenticated" ? "" : ""
+              status === "unauthenticated" ? "pointer-events-none" : ""
             }`}
           >
             <button
@@ -122,20 +122,20 @@ const ReactionPicker: FC<ReactionPickerProps> = ({
                   data-content={i}
                   key={i}
                   className="relative hover:before:content-[attr(data-content)] before:opacity-0 before:transition hover:before:opacity-100 before:absolute before:-top-9 before:z-10 hover:before:bg-white dark:hover:before:bg-dark before:text-zinc-800 dark:before:text-gray-200 before:left-1/2 before:-translate-x-1/2 before:rounded-full before:px-2"
+                  onTouchEnd={() => {
+                    setCurrentReaction(index + 1);
+                    setOnHover(false);
+                  }}
+                  onClick={() => {
+                    setCurrentReaction(index + 1);
+                    setOnHover(false);
+                  }}
                 >
                   <img
-                    className="w-7 h-7 transition duration-300 hover:scale-[120%] active:scale-95 origin-bottom transform scale-100 rounded-full relative "
+                    className="w-7 h-7 transition duration-300 hover:scale-[120%] active:scale-95 origin-bottom transform scale-100 rounded-full relative pointer-events-none select-none"
                     draggable={false}
                     key={i}
                     src={REACTIONS_UI[i].image}
-                    onTouchEnd={() => {
-                      setCurrentReaction(index + 1);
-                      setOnHover(false);
-                    }}
-                    onClick={() => {
-                      setCurrentReaction(index + 1);
-                      setOnHover(false);
-                    }}
                     alt=""
                   />
                 </div>
