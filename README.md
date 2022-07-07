@@ -1,34 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CmtIO
 
-## Getting Started
+A comment system alternative to Disqus
 
-First, run the development server:
+<p align="center">
+  <img alt="Stars" src="https://badgen.net/github/stars/napthedev/cmtio">
+  <img alt="Forks" src="https://badgen.net/github/forks/napthedev/cmtio">
+  <img alt="Issues" src="https://badgen.net/github/issues/napthedev/cmtio">
+  <img alt="Commits" src="https://badgen.net/github/commits/napthedev/cmtio">
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## Live demo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Official Website: [https://cmtio.vercel.app](https://cmtio.vercel.app)
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Main technology used
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+- nextjs, react, typescript
+- tailwindcss
+- next-auth
+- next-themes
+- react-icons
+- faunadb
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Features
 
-## Learn More
+- Sign in with Google, Facebook, Github
+- Create new sites
+  - Customize allowed origins
+- Embeddable comment system
+- Sort by newest / oldest
+- Write a comment
+- Reply to comments (max depth = 3)
+- Add reactions
 
-To learn more about Next.js, take a look at the following resources:
+## Self hosting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[See SELF-HOSTING.md](/SELF-HOSTING.md)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Previews
 
-## Deploy on Vercel
+![Preview 1](https://res.cloudinary.com/naptest/image/upload/v1657206400/cmtio/preview-cmtio_knmyzy.jpg)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Summary
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+👉 If you like this project, give it a star ✨ and share 👨🏻‍💻 it to your friends 👈
