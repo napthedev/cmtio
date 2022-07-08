@@ -57,7 +57,11 @@ const Comments: FC<CommentsProps> = ({ isAdmin }) => {
 
   useEffect(() => {
     setIsLoadingNewComments(false);
-  }, [data?.comments.data.length]);
+  }, [
+    data?.comments.data.length,
+    // @ts-ignore
+    limit <= data?.comments.data.length,
+  ]);
 
   useEffectUpdate(() => {
     router.push(
