@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import Link from "next/link";
 import Script from "next/script";
 
 const Demo: NextPage = () => {
@@ -13,6 +14,9 @@ const Demo: NextPage = () => {
           <h1 className="text-3xl">CmtIO</h1>
         </div>
         <p className="mx-4 md:mx-0">A comment system alternative to Disqus</p>
+        <Link href="/">
+          <a className="text-blue-400">Embed this into your site now</a>
+        </Link>
 
         <div
           className="border border-zinc-200 dark:border-zinc-800 mt-8"
