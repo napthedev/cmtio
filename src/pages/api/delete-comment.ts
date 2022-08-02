@@ -5,6 +5,7 @@ import { UserSession } from "@/shared/types";
 import { client } from "@/shared/client";
 import { getSession } from "next-auth/react";
 import { idFromRef } from "@/utils/fauna";
+import { getSiteById } from "@/services/sites";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,7 +29,16 @@ export default async function handler(
     )
   );
 
-  if (idFromRef(comment.data.user) !== userId)
+  const site = JSON.parse(
+    JSON.stringify(
+      await client.query(getSiteById(idFromRef(comment.data.site)))
+    )
+  );
+
+  if (
+    idFromRef(comment.data.user) !== userId &&
+    idFromRef(site.data.user) !== userId
+  )
     return res.status(403).json({ message: "Invalid request" });
 
   await client.query(

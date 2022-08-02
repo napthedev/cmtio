@@ -160,7 +160,7 @@ const Comment: FC<CommentProps> = ({
             )}
           </div>
 
-          {isAdmin && (
+          {(isAdmin || idFromRef(comment.user.ref) === user?.user?.id) && (
             <ClickAwayListener onClickAway={() => setIsDropdownOpened(false)}>
               {(ref) => (
                 <div

@@ -44,8 +44,10 @@ export interface CommentType {
 }
 
 interface User {
-  "@ref": {
-    id: string;
+  ref: {
+    "@ref": {
+      id: string;
+    };
   };
   ts: number;
   data: {
