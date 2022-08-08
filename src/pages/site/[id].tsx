@@ -175,7 +175,7 @@ const Site: NextPage<SiteProps> = ({ site }) => {
                   __html: `<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;cmtio&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
 
 <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;${
-                    process.env.NEXT_PUBLIC_URL
+                    typeof window === "undefined" ? "" : window.location.origin
                   }/client.js&quot;</span> <span class="hljs-attr">data-site-id</span>=<span class="hljs-string">&quot;${idFromRef(
                     site.ref
                   )}&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>

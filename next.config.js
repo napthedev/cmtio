@@ -8,11 +8,6 @@ const withAnalyzer = require("@next/bundle-analyzer")({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  env: {
-    NEXT_PUBLIC_URL: process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000",
-  },
 };
 
 module.exports = withPlugins([withAnalyzer, withPreact], nextConfig);
