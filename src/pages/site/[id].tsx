@@ -14,9 +14,10 @@ import { idFromRef } from "@/utils/fauna";
 
 interface SiteProps {
   site: SiteResponse;
+  origin: string;
 }
 
-const Site: NextPage<SiteProps> = ({ site }) => {
+const Site: NextPage<SiteProps> = ({ site, origin }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [isAlertOpened, setIsAlertOpened] = useState(false);
@@ -175,7 +176,9 @@ const Site: NextPage<SiteProps> = ({ site }) => {
                   __html: `<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;cmtio&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
 
 <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;${
-                    typeof window === "undefined" ? "" : window.location.origin
+                    origin.includes("localhost")
+                      ? `http://${origin}`
+                      : `https://${origin}`
                   }/client.js&quot;</span> <span class="hljs-attr">data-site-id</span>=<span class="hljs-string">&quot;${idFromRef(
                     site.ref
                   )}&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
@@ -271,6 +274,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       session,
       site,
+      origin: req.headers.host,
     },
   };
 };
