@@ -1,15 +1,16 @@
-import Alert from "@/components/Alert";
-import Navbar from "@/components/Navbar";
-import { getSiteById } from "@/services/sites";
-import { client } from "@/shared/client";
-import { SiteResponse, UserSession } from "@/shared/types";
-import { idFromRef } from "@/utils/fauna";
-import type { GetServerSideProps, NextPage } from "next";
-import { getSession } from "next-auth/react";
-import Head from "next/head";
 import { FormEvent, useState } from "react";
+import type { GetServerSideProps, NextPage } from "next";
+import { SiteResponse, UserSession } from "@/shared/types";
+
 import { AiFillPlusCircle } from "react-icons/ai";
+import Alert from "@/components/Alert";
 import { FaTrashAlt } from "react-icons/fa";
+import Head from "next/head";
+import Navbar from "@/components/Navbar";
+import { client } from "@/shared/client";
+import { getSession } from "next-auth/react";
+import { getSiteById } from "@/services/sites";
+import { idFromRef } from "@/utils/fauna";
 
 interface SiteProps {
   site: SiteResponse;
@@ -173,7 +174,9 @@ const Site: NextPage<SiteProps> = ({ site }) => {
                 dangerouslySetInnerHTML={{
                   __html: `<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;cmtio&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
 
-<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://cmtio.vercel.app/client.js&quot;</span> <span class="hljs-attr">data-site-id</span>=<span class="hljs-string">&quot;${idFromRef(
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;${
+                    process.env.NEXT_PUBLIC_URL
+                  }/client.js&quot;</span> <span class="hljs-attr">data-site-id</span>=<span class="hljs-string">&quot;${idFromRef(
                     site.ref
                   )}&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 
